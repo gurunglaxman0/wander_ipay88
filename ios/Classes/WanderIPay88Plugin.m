@@ -3,6 +3,7 @@ static FlutterMethodChannel* channel;
 
 @implementation WanderIPay88Plugin
 UIView* _paymentView;
+UINavigationController* _navVC;
 -(id) init {
     self = [super init];
     paymentSdk = [[Ipay alloc] init];
@@ -42,6 +43,7 @@ UIView* _paymentView;
       id backendPostURL = [arguments objectForKey:@"backendPostURL"];
       id appDeepLink = [arguments objectForKey:@"appDeepLink"];
       
+      
       IpayPayment* payment = [[IpayPayment alloc] init];
       [payment setMerchantCode:merchantCode ? [merchantCode description] : @""];
       [payment setPaymentId:paymentId ? [paymentId description] : @""];
@@ -63,7 +65,19 @@ UIView* _paymentView;
      _paymentView = [paymentSdk checkout:payment];
       if (_paymentView != nil) {
           UIViewController* rootController = [[[UIApplication.sharedApplication delegate] window] rootViewController];
-          [[rootController view] addSubview:_paymentView];
+        
+          IPayViewController *controller = [[IPayViewController alloc] init];
+          [[controller view] addSubview:_paymentView];
+          
+          
+          [controller setOnClose:^{
+              [self paymentCancelled:refNo withTransId:@"" withAmount:amount withRemark:@"Payment Cancelled" withErrDesc:@"Payment Cancelled by user."];
+          }];
+          
+          _navVC = [[UINavigationController alloc] initWithRootViewController:controller];
+          [_navVC setModalPresentationStyle:UIModalPresentationFullScreen];
+          [rootController presentViewController:_navVC animated:true completion:nil];
+          
       }
   } else if ([call.method isEqualToString:@"requery"]) {
       result(nil);
@@ -85,8 +99,8 @@ UIView* _paymentView;
 }
 
 - (void)paymentSuccess:(NSString *)refNo withTransId:(NSString *)transId withAmount:(NSString *)amount withRemark:(NSString *)remark withAuthCode:(NSString *)authCode {
-    if(_paymentView != NULL) {
-        [_paymentView removeFromSuperview];
+    if(_navVC != NULL) {
+        [_navVC dismissViewControllerAnimated:true completion:false];
     }
     [channel invokeMethod:@"onPaymentSuccess" arguments:@{
         @"transId": transId,
@@ -98,9 +112,10 @@ UIView* _paymentView;
 }
 
 - (void)paymentCancelled:(NSString *)refNo withTransId:(NSString *)transId withAmount:(NSString *)amount withRemark:(NSString *)remark withErrDesc:(NSString *)errDesc {
-    if(_paymentView != NULL) {
-        [_paymentView removeFromSuperview];
+    if(_navVC != NULL) {
+        [_navVC dismissViewControllerAnimated:true completion:false];
     }
+    
     [channel invokeMethod:@"onPaymentCanceled" arguments: @{
         @"transId": transId,
         @"refNo": refNo,
@@ -120,8 +135,8 @@ UIView* _paymentView;
 }
 
 - (void)paymentFailed:(NSString *)refNo withTransId:(NSString *)transId withAmount:(NSString *)amount withRemark:(NSString *)remark withErrDesc:(NSString *)errDesc {
-    if(_paymentView != NULL) {
-        [_paymentView removeFromSuperview];
+    if(_navVC != NULL) {
+        [_navVC dismissViewControllerAnimated:true completion:false];
     }
     [channel invokeMethod:@"onPaymentFailed" arguments: @{
         @"transId": transId,
@@ -142,5 +157,19 @@ UIView* _paymentView;
     }];
 }
 
+-(void) addBackButton {
+    [_navVC setModalPresentationStyle:UIModalPresentationFullScreen];
+   
+    [_navVC.barHideOnSwipeGestureRecognizer setEnabled:NO];
+    [_navVC.barHideOnTapGestureRecognizer setEnabled:NO];
+    UIBarButtonItem* backBtn = [[UIBarButtonItem alloc] initWithTitle:@"Close" style:UIBarButtonItemStyleDone target:self action:@selector(goBack)];
+    [backBtn setTintColor:[UIColor blackColor]];
+
+    _navVC.navigationItem.leftBarButtonItem = backBtn;
+}
+
+-(void) onBack {
+    [_navVC dismissViewControllerAnimated:true completion:nil];
+}
 
 @end
