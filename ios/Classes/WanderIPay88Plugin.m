@@ -2,6 +2,7 @@
 static FlutterMethodChannel* channel;
 
 @implementation WanderIPay88Plugin
+UIView* _paymentView;
 -(id) init {
     self = [super init];
     paymentSdk = [[Ipay alloc] init];
@@ -59,10 +60,10 @@ static FlutterMethodChannel* channel;
           [payment setAppdeeplink:appDeepLink];
       }
       
-      UIView* paymentView = [paymentSdk checkout:payment];
-      if (paymentView != nil) {
+     _paymentView = [paymentSdk checkout:payment];
+      if (_paymentView != nil) {
           UIViewController* rootController = [[[UIApplication.sharedApplication delegate] window] rootViewController];
-          [[rootController view] addSubview:paymentView];
+          [[rootController view] addSubview:_paymentView];
       }
   } else if ([call.method isEqualToString:@"requery"]) {
       result(nil);
@@ -84,6 +85,9 @@ static FlutterMethodChannel* channel;
 }
 
 - (void)paymentSuccess:(NSString *)refNo withTransId:(NSString *)transId withAmount:(NSString *)amount withRemark:(NSString *)remark withAuthCode:(NSString *)authCode {
+    if(_paymentView != NULL) {
+        [_paymentView removeFromSuperview];
+    }
     [channel invokeMethod:@"onPaymentSuccess" arguments:@{
         @"transId": transId,
         @"refNo": refNo,
@@ -94,6 +98,9 @@ static FlutterMethodChannel* channel;
 }
 
 - (void)paymentCancelled:(NSString *)refNo withTransId:(NSString *)transId withAmount:(NSString *)amount withRemark:(NSString *)remark withErrDesc:(NSString *)errDesc {
+    if(_paymentView != NULL) {
+        [_paymentView removeFromSuperview];
+    }
     [channel invokeMethod:@"onPaymentCanceled" arguments: @{
         @"transId": transId,
         @"refNo": refNo,
@@ -113,6 +120,9 @@ static FlutterMethodChannel* channel;
 }
 
 - (void)paymentFailed:(NSString *)refNo withTransId:(NSString *)transId withAmount:(NSString *)amount withRemark:(NSString *)remark withErrDesc:(NSString *)errDesc {
+    if(_paymentView != NULL) {
+        [_paymentView removeFromSuperview];
+    }
     [channel invokeMethod:@"onPaymentFailed" arguments: @{
         @"transId": transId,
         @"refNo": refNo,
