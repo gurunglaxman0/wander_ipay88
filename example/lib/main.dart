@@ -5,8 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:wander_i_pay88/wander_i_pay88.dart';
 import 'package:wander_i_pay88/wander_i_pay88_platform_interface.dart';
 
-const String MERCHENT_KEY = "MERCHENT_KEY";
-const String MERCHENT_CODE = "MERCHENT_CODE";
+const String MERCHENT_KEY = "ji0lA3osG";
+const String MERCHENT_CODE = "M14753";
 
 void main() {
   runApp(const MyApp());
