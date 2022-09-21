@@ -19,7 +19,6 @@ class IPayLauncherActivity : Activity() {
         val bundle = intent.extras
         val params = bundle?.getParcelable<IPayParams>(IPAY_PARAMS)
         val channelDelegate = bundle?.getSerializable(IPAY_DELEGATE) as IPayChannelDelegate
-
         val iPayIHPayment = IPayIHPayment()
         iPayIHPayment.refNo = params?.refNo ?: ""
         iPayIHPayment.paymentId = params?.paymentId ?: ""
@@ -49,9 +48,9 @@ class IPayLauncherActivity : Activity() {
         super.onActivityResult(requestCode, resultCode, data)
         val channelDelegate = intent.extras?.getSerializable(IPAY_DELEGATE) as IPayChannelDelegate
         if (resultCode == RESULT_CANCELED) {
-            finish()
             channelDelegate.onBackPressed()
         }
+        finish()
     }
 
     companion object {

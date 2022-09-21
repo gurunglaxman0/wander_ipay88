@@ -10,6 +10,7 @@ private var methodChannel: MethodChannel? = null
 
 class IPayChannelDelegate(@Transient private var channel: MethodChannel)
     : IPayIHResultDelegate, Serializable {
+
     init {
         methodChannel = channel
     }

@@ -22,6 +22,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> implements IPayResultDelegate {
   String _platformVersion = 'Unknown';
   final _wanderIPay88Plugin = WanderIPay88();
+  String _iPayResponse = "Unknown";
 
   @override
   void initState() {
@@ -66,7 +67,10 @@ class _MyAppState extends State<MyApp> implements IPayResultDelegate {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Column(children: [
+            Text('Running on: $_platformVersion\n'),
+            Text('Response: $_iPayResponse\n'),
+          ]),
         ),
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.help),
@@ -100,21 +104,24 @@ class _MyAppState extends State<MyApp> implements IPayResultDelegate {
   @override
   void onPaymentCanceled(String? transId, String? refNo, String? amount,
       String? remark, String? errDesc) {
-    // TODO: implement onPaymentCanceled
-
-    debugPrint("Payment Cancelled $errDesc");
+    setState(() {
+      _iPayResponse = "Payment Cancelled $errDesc";
+    });
   }
 
   @override
   void onPaymentFailed(String? transId, String? refNo, String? amount,
       String? remark, String? errDesc) {
-    // TODO: implement onPaymentFailed
-    debugPrint("onPaymentFailed $errDesc");
+    setState(() {
+      _iPayResponse = "Payment Failed $errDesc";
+    });
   }
 
   @override
   void onPaymentSucceeded(String? transId, String? refNo, String? amount,
       String? remark, String? authCode) {
-    // TODO: implement onPaymentSucceeded
+    setState(() {
+      _iPayResponse = "Payment Succeeded";
+    });
   }
 }
