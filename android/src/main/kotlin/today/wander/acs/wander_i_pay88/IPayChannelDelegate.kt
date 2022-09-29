@@ -50,6 +50,7 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel)
                                 "transId" to transId,
                                 "refNo" to refNo,
                                 "amount" to amount,
+                                 "remark" to remark,
                                 "authCode" to authCode,
                         )
                 )
@@ -73,6 +74,7 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel)
                                 "transId" to transId,
                                 "refNo" to refNo,
                                 "amount" to amount,
+                                 "remark" to remark,
                                 "errDesc" to errDesc,
                         )
                 )
@@ -96,6 +98,7 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel)
                                 "transId" to transId,
                                 "refNo" to refNo,
                                 "amount" to amount,
+                                 "remark" to remark,
                                 "errDesc" to errDesc,
                         )
                 )

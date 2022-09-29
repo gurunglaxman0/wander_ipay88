@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wander_i_pay88/wander_i_pay88_platform_interface.dart';
+import 'src/payment.dart';
+
+export 'src/delegate.dart';
+export 'src/payment.dart';
+export 'src/responses.dart';
 
 class WanderIPay88 extends IPay {
   /// The method channel used to interact with the native platform.

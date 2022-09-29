@@ -71,7 +71,7 @@ UINavigationController* _navVC;
           
           
           [controller setOnClose:^{
-              [self paymentCancelled:refNo withTransId:@"" withAmount:amount withRemark:@"Payment Cancelled" withErrDesc:@"Payment Cancelled by user."];
+              [self cancelPayment:refNo withTransId:@"" withAmount:amount withRemark:@"Payment Cancelled" withErrDesc:@"Payment Cancelled by user."];
           }];
           
           _navVC = [[UINavigationController alloc] initWithRootViewController:controller];
@@ -102,7 +102,7 @@ UINavigationController* _navVC;
     if(_navVC != NULL) {
         [_navVC dismissViewControllerAnimated:true completion:false];
     }
-    [channel invokeMethod:@"onPaymentSuccess" arguments:@{
+    [channel invokeMethod:@"onPaymentSucceeded" arguments:@{
         @"transId": transId,
         @"refNo": refNo,
         @"amount": amount,
@@ -157,19 +157,15 @@ UINavigationController* _navVC;
     }];
 }
 
--(void) addBackButton {
-    [_navVC setModalPresentationStyle:UIModalPresentationFullScreen];
-   
-    [_navVC.barHideOnSwipeGestureRecognizer setEnabled:NO];
-    [_navVC.barHideOnTapGestureRecognizer setEnabled:NO];
-    UIBarButtonItem* backBtn = [[UIBarButtonItem alloc] initWithTitle:@"Close" style:UIBarButtonItemStyleDone target:self action:@selector(goBack)];
-    [backBtn setTintColor:[UIColor blackColor]];
-
-    _navVC.navigationItem.leftBarButtonItem = backBtn;
+-(void) cancelPayment:(NSString *)refNo withTransId:(NSString *)transId withAmount:(NSString *)amount withRemark:(NSString *)remark withErrDesc:(NSString *)errDesc {
+    NSLog(@"cancelPayment test ----------------->");
+    [channel invokeMethod:@"onPaymentCanceled" arguments: @{
+        @"transId": transId,
+        @"refNo": refNo,
+        @"amount":amount,
+        @"remark": remark,
+        @"errDesc": errDesc
+//        @"authCode": @"AW-101"
+    }];
 }
-
--(void) onBack {
-    [_navVC dismissViewControllerAnimated:true completion:nil];
-}
-
 @end

@@ -6,10 +6,6 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:wander_i_pay88/src/delegate.dart';
 import 'package:wander_i_pay88/src/payment.dart';
 
-export 'src/delegate.dart';
-export 'src/payment.dart';
-export 'src/responses.dart';
-
 abstract class IPay extends PlatformInterface {
   /// Constructs a WanderIPay88Platform.
   IPay() : super(token: _token) {
@@ -89,24 +85,21 @@ abstract class IPay extends PlatformInterface {
 
 extension IPayCheckout on IPay {
   @protected
-  void onPaymentSucceeded(String? transId, String? refNo, String? amount,
-      String? remark, String? authCode) {
+  void onPaymentSucceeded(String? transId, String? refNo, String? amount, String? remark, String? authCode) {
     for (var d in delegates) {
       d.onPaymentSucceeded(transId, refNo, amount, remark, authCode);
     }
   }
 
   @protected
-  void onPaymentFailed(String? transId, String? refNo, String? amount,
-      String? remark, String? errDesc) {
+  void onPaymentFailed(String? transId, String? refNo, String? amount, String? remark, String? errDesc) {
     for (var d in delegates) {
       d.onPaymentFailed(transId, refNo, amount, remark, errDesc);
     }
   }
 
   @protected
-  void onPaymentCanceled(String? transId, String? refNo, String? amount,
-      String? remark, String? errDesc) {
+  void onPaymentCanceled(String? transId, String? refNo, String? amount, String? remark, String? errDesc) {
     for (var d in delegates) {
       d.onPaymentCanceled(transId, refNo, amount, remark, errDesc);
     }
