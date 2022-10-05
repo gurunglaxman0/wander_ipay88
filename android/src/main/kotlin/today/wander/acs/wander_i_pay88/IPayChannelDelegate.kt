@@ -16,23 +16,23 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel)
     }
 
     override fun onConnectionError(
-            transId: String?,
-            refNo: String?,
-            p2: String?,
-            p3: String?,
-            amount: String?,
-            p5: String?,
-            p6: String?
+        transId: String?,
+        refNo: String?,
+        p2: String?,
+        p3: String?,
+        amount: String?,
+        p5: String?,
+        p6: String?
     ) {
         Handler(Looper.getMainLooper()).post {
             methodChannel?.invokeMethod(
-                    "onPaymentSucceeded",
-                    mapOf(
-                            "transId" to transId,
-                            "refNo" to refNo,
-                            "amount" to amount,
-                            "errDesc" to "",
-                    )
+                "onPaymentFailed",
+                mapOf(
+                    "transId" to transId,
+                    "refNo" to refNo,
+                    "amount" to amount,
+                    "errDesc" to "",
+                )
             )
         }
     }
@@ -45,14 +45,14 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel)
         try {
             Handler(Looper.getMainLooper()).post {
                 channel?.invokeMethod(
-                        "onPaymentSucceeded",
-                        mapOf(
-                                "transId" to transId,
-                                "refNo" to refNo,
-                                "amount" to amount,
-                                 "remark" to remark,
-                                "authCode" to authCode,
-                        )
+                    "onPaymentSucceeded",
+                    mapOf(
+                        "transId" to transId,
+                        "refNo" to refNo,
+                        "amount" to amount,
+                        "remark" to remark,
+                        "authCode" to authCode,
+                    )
                 )
             }
         } catch (e: Exception) {
@@ -69,14 +69,14 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel)
         try {
             Handler(Looper.getMainLooper()).post {
                 methodChannel?.invokeMethod(
-                        "onPaymentSucceeded",
-                        mapOf(
-                                "transId" to transId,
-                                "refNo" to refNo,
-                                "amount" to amount,
-                                 "remark" to remark,
-                                "errDesc" to errDesc,
-                        )
+                    "onPaymentFailed",
+                    mapOf(
+                        "transId" to transId,
+                        "refNo" to refNo,
+                        "amount" to amount,
+                        "remark" to remark,
+                        "errDesc" to errDesc,
+                    )
                 )
             }
         } catch (e: Exception) {
@@ -93,14 +93,14 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel)
         try {
             Handler(Looper.getMainLooper()).post {
                 methodChannel?.invokeMethod(
-                        "onPaymentSucceeded",
-                        mapOf(
-                                "transId" to transId,
-                                "refNo" to refNo,
-                                "amount" to amount,
-                                 "remark" to remark,
-                                "errDesc" to errDesc,
-                        )
+                    "onPaymentCanceled",
+                    mapOf(
+                        "transId" to transId,
+                        "refNo" to refNo,
+                        "amount" to amount,
+                        "remark" to remark,
+                        "errDesc" to errDesc,
+                    )
                 )
             }
         } catch (e: Exception) {
@@ -111,13 +111,13 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel)
     fun onBackPressed() {
         Handler(Looper.getMainLooper()).post {
             methodChannel?.invokeMethod(
-                    "onPaymentSucceeded",
-                    mapOf(
-                            "transId" to "",
-                            "refNo" to "",
-                            "amount" to "",
-                            "errDesc" to "",
-                    )
+                "onPaymentCanceled",
+                mapOf(
+                    "transId" to "",
+                    "refNo" to "",
+                    "amount" to "",
+                    "errDesc" to "",
+                )
             )
         }
     }
@@ -129,13 +129,13 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel)
         try {
             Handler(Looper.getMainLooper()).post {
                 channel?.invokeMethod(
-                        "onRequeryResult",
-                        mapOf(
-                                "merchantCode" to merchantCode,
-                                "refNo" to refNo,
-                                "amount" to amount,
-                                "result" to result,
-                        )
+                    "onRequeryResult",
+                    mapOf(
+                        "merchantCode" to merchantCode,
+                        "refNo" to refNo,
+                        "amount" to amount,
+                        "result" to result,
+                    )
                 )
             }
         } catch (e: Exception) {
