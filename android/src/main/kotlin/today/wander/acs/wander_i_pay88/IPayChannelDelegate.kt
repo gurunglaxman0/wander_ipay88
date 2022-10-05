@@ -26,7 +26,7 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel)
     ) {
         Handler(Looper.getMainLooper()).post {
             methodChannel?.invokeMethod(
-                    "onPaymentFailed",
+                    "onPaymentSucceeded",
                     mapOf(
                             "transId" to transId,
                             "refNo" to refNo,
@@ -69,7 +69,7 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel)
         try {
             Handler(Looper.getMainLooper()).post {
                 methodChannel?.invokeMethod(
-                        "onPaymentFailed",
+                        "onPaymentSucceeded",
                         mapOf(
                                 "transId" to transId,
                                 "refNo" to refNo,
@@ -93,7 +93,7 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel)
         try {
             Handler(Looper.getMainLooper()).post {
                 methodChannel?.invokeMethod(
-                        "onPaymentCanceled",
+                        "onPaymentSucceeded",
                         mapOf(
                                 "transId" to transId,
                                 "refNo" to refNo,
@@ -111,7 +111,7 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel)
     fun onBackPressed() {
         Handler(Looper.getMainLooper()).post {
             methodChannel?.invokeMethod(
-                    "onPaymentCanceled",
+                    "onPaymentSucceeded",
                     mapOf(
                             "transId" to "",
                             "refNo" to "",
