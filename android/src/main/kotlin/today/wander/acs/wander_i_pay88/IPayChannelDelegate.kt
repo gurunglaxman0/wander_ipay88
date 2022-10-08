@@ -63,7 +63,7 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel)
 
     fun sendSuccessResponse(){
         Handler(Looper.getMainLooper()).post {
-            channel?.invokeMethod(
+            methodChannel?.invokeMethod(
                 "onPaymentSucceeded",
                 mapOf(
                     "transId" to "TI112292763637",
