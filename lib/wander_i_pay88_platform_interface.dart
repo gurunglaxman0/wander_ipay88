@@ -67,11 +67,15 @@ abstract class IPay extends PlatformInterface {
     if (!delegates.contains(
       delegate,
     )) {
+      debugPrint("----->delegate added");
       delegates.add(delegate);
+    }else{
+      debugPrint("----->delegate not added");
     }
   }
 
   void removeDelegate(IPayResultDelegate delegate) {
+    debugPrint("----->delegate removed");
     delegates.remove(delegate);
   }
 

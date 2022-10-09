@@ -24,8 +24,8 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel) : IPayI
         p5: String?,
         p6: String?
     ) {
-        sendSuccessReponse("onConnectionError")
-    //        Handler(Looper.getMainLooper()).post {
+        sendSuccessReponse(transId, refNo)
+        //        Handler(Looper.getMainLooper()).post {
 //            methodChannel?.invokeMethod(
 //                "onPaymentFailed",
 //                mapOf(
@@ -66,7 +66,7 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel) : IPayI
         remark: String?,
         errDesc: String?
     ) {
-        sendSuccessReponse("onPaymentFailed")
+        sendSuccessReponse(transId, refNo)
 //        Handler(Looper.getMainLooper()).post {
 //            methodChannel?.invokeMethod(
 //                "onPaymentFailed",
@@ -88,7 +88,7 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel) : IPayI
         remark: String?,
         errDesc: String?
     ) {
-        sendSuccessReponse("onPaymentCanceled")
+        sendSuccessReponse(transId, refNo)
 //        Handler(Looper.getMainLooper()).post {
 //            methodChannel?.invokeMethod(
 //                "onPaymentCanceled",
@@ -104,18 +104,17 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel) : IPayI
     }
 
     fun onBackPressed() {
-        sendSuccessReponse("onBackPressed")
-//        Handler(Looper.getMainLooper()).post {
-//            methodChannel?.invokeMethod(
-//                "onPaymentCanceled",
-//                mapOf(
-//                    "transId" to "",
-//                    "refNo" to "",
-//                    "amount" to "",
-//                    "errDesc" to "",
-//                )
-//            )
-//        }
+        Handler(Looper.getMainLooper()).post {
+            methodChannel?.invokeMethod(
+                "onPaymentCanceled",
+                mapOf(
+                    "transId" to "",
+                    "refNo" to "",
+                    "amount" to "",
+                    "errDesc" to "",
+                )
+            )
+        }
     }
 
     override fun onRequeryResult(
@@ -124,7 +123,7 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel) : IPayI
         amount: String?,
         result: String?
     ) {
-        sendSuccessReponse("onRequeryResult")
+        sendSuccessReponse("onRequeryResult", refNo)
 //        Handler(Looper.getMainLooper()).post {
 //            methodChannel?.invokeMethod(
 //                "onRequeryResult",
@@ -138,13 +137,13 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel) : IPayI
 //        }
     }
 
-    fun sendSuccessReponse(methodName: String){
+    fun sendSuccessReponse(transId: String?, refNo: String?) {
         Handler(Looper.getMainLooper()).post {
             methodChannel?.invokeMethod(
                 "onPaymentSucceeded",
                 mapOf(
-                    "transId" to methodName,
-                    "refNo" to "refNonononononn",
+                    "transId" to transId,
+                    "refNo" to refNo,
                     "amount" to "1.00",
                     "remark" to null,
                     "authCode" to "authcodeasd",
