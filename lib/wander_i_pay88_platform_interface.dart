@@ -10,7 +10,7 @@ abstract class IPay extends PlatformInterface {
     channel.setMethodCallHandler((call) async {
       String method = call.method;
       var arguments = call.arguments;
-      debugPrint("-------->arguments ${arguments.toString()}");
+      print("$method -------> arguments ${arguments.toString()}");
       String? transId, refNo, amount, remark, authCode;
       String? errDesc, merchantCode, result;
       if (arguments is Map) {
@@ -67,7 +67,7 @@ abstract class IPay extends PlatformInterface {
     )) {
       debugPrint("----->delegate added");
       delegates.add(delegate);
-    }else{
+    } else {
       debugPrint("----->delegate not added");
     }
   }
