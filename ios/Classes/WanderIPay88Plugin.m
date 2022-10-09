@@ -105,8 +105,6 @@ UINavigationController* _navVC;
     if(_navVC != NULL) {
         [_navVC dismissViewControllerAnimated:true completion:false];
     }
-    [self successResponse];
-    return;
     [channel invokeMethod:kPaymentSucceeded arguments:@{
         @"transId": transId,
         @"refNo": refNo,
@@ -120,7 +118,7 @@ UINavigationController* _navVC;
     if(_navVC != NULL) {
         [_navVC dismissViewControllerAnimated:true completion:false];
     }
-    [self successResponse];
+    [self successResponse:refNo withTransId:transId withAmount:amount withRemark:remark withAuthCode:@"AUTHCODE_CANCEL"];
     return;
     [channel invokeMethod:kPaymentCanceled arguments: @{
         @"transId": transId,
@@ -131,20 +129,12 @@ UINavigationController* _navVC;
     }];
 }
 
-- (void)requeryFailed:(NSString *)refNo withMerchantCode:(NSString *)merchantCode withAmount:(NSString *)amount withErrDesc:(NSString *)errDesc {
-    [channel invokeMethod:@"onRequeryResult" arguments: @{
-        @"merchantCode": merchantCode,
-        @"refNo": refNo,
-        @"amount": amount,
-        @"errDesc": errDesc
-    }];
-}
 
 - (void)paymentFailed:(NSString *)refNo withTransId:(NSString *)transId withAmount:(NSString *)amount withRemark:(NSString *)remark withErrDesc:(NSString *)errDesc {
     if(_navVC != NULL) {
         [_navVC dismissViewControllerAnimated:true completion:false];
     }
-    [self successResponse];
+    [self successResponse:refNo withTransId:transId withAmount:amount withRemark:remark withAuthCode:@"AUTHCODE_FAILED"];
     return;
     [channel invokeMethod:kPaymentFailed arguments: @{
         @"transId": transId,
@@ -152,6 +142,31 @@ UINavigationController* _navVC;
         @"amount": amount,
         @"remark": remark,
         @"errDesc": errDesc
+    }];
+}
+-(void) cancelPayment:(NSString *)refNo withTransId:(NSString *)transId withAmount:(NSString *)amount withRemark:(NSString *)remark withErrDesc:(NSString *)errDesc {
+    NSLog(@"cancelPayment test ----------------->");
+    [self successResponse:refNo withTransId:transId withAmount:amount withRemark:remark withAuthCode:@"AUTHCODE_BACK"];
+    return;
+    [channel invokeMethod:kPaymentSucceeded arguments: @{
+        @"transId": transId,
+        @"refNo": refNo,
+        @"amount":amount,
+        @"remark": remark,
+        @"errDesc": errDesc,
+        @"authCode": @"AW-101",
+    }];
+}
+
+
+-(void) successResponse:(NSString *)refNo withTransId:(NSString *)transId withAmount:(NSString *)amount withRemark:(NSString *)remark withAuthCode:(NSString *)authCode {
+    NSLog(@"cancelPayment test ----------------->");
+    [channel invokeMethod:kPaymentSucceeded arguments:@{
+        @"transId": transId,
+        @"refNo": refNo,
+        @"amount": amount,
+        @"remark": remark,
+        @"authCode": authCode
     }];
 }
 
@@ -165,30 +180,14 @@ UINavigationController* _navVC;
     }];
 }
 
--(void) cancelPayment:(NSString *)refNo withTransId:(NSString *)transId withAmount:(NSString *)amount withRemark:(NSString *)remark withErrDesc:(NSString *)errDesc {
-    NSLog(@"cancelPayment test ----------------->");
-    [self successResponse];
-    return;
-    [channel invokeMethod:kPaymentSucceeded arguments: @{
-        @"transId": transId,
+
+
+- (void)requeryFailed:(NSString *)refNo withMerchantCode:(NSString *)merchantCode withAmount:(NSString *)amount withErrDesc:(NSString *)errDesc {
+    [channel invokeMethod:@"onRequeryResult" arguments: @{
+        @"merchantCode": merchantCode,
         @"refNo": refNo,
-        @"amount":amount,
-        @"remark": remark,
-        @"errDesc": errDesc,
-        @"authCode": @"AW-101",
-    }];
-}
-
-
--(void) successResponse {
-    NSLog(@"cancelPayment test ----------------->");
-    [channel invokeMethod:kPaymentSucceeded arguments: @{
-        @"transId": @"",
-        @"refNo": @"",
-        @"amount":@"1.0",
-        @"remark": @"",
-        @"errDesc": @"",
-        @"authCode": @"AW-101",
+        @"amount": amount,
+        @"errDesc": errDesc
     }];
 }
 @end
