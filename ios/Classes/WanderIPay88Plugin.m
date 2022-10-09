@@ -118,8 +118,6 @@ UINavigationController* _navVC;
     if(_navVC != NULL) {
         [_navVC dismissViewControllerAnimated:true completion:false];
     }
-    [self successResponse:refNo withTransId:transId withAmount:amount withRemark:remark withAuthCode:@"AUTHCODE_CANCEL"];
-    return;
     [channel invokeMethod:kPaymentCanceled arguments: @{
         @"transId": transId,
         @"refNo": refNo,
@@ -134,8 +132,6 @@ UINavigationController* _navVC;
     if(_navVC != NULL) {
         [_navVC dismissViewControllerAnimated:true completion:false];
     }
-    [self successResponse:refNo withTransId:transId withAmount:amount withRemark:remark withAuthCode:@"AUTHCODE_FAILED"];
-    return;
     [channel invokeMethod:kPaymentFailed arguments: @{
         @"transId": transId,
         @"refNo": refNo,
@@ -146,9 +142,7 @@ UINavigationController* _navVC;
 }
 -(void) cancelPayment:(NSString *)refNo withTransId:(NSString *)transId withAmount:(NSString *)amount withRemark:(NSString *)remark withErrDesc:(NSString *)errDesc {
     NSLog(@"cancelPayment test ----------------->");
-    [self successResponse:refNo withTransId:transId withAmount:amount withRemark:remark withAuthCode:@"AUTHCODE_BACK"];
-    return;
-    [channel invokeMethod:kPaymentSucceeded arguments: @{
+    [channel invokeMethod:kPaymentCanceled arguments: @{
         @"transId": transId,
         @"refNo": refNo,
         @"amount":amount,
@@ -158,9 +152,8 @@ UINavigationController* _navVC;
     }];
 }
 
-
 -(void) successResponse:(NSString *)refNo withTransId:(NSString *)transId withAmount:(NSString *)amount withRemark:(NSString *)remark withAuthCode:(NSString *)authCode {
-    NSLog(@"cancelPayment test ----------------->");
+    NSLog(@"successResponse test ----------------->");
     [channel invokeMethod:kPaymentSucceeded arguments:@{
         @"transId": transId,
         @"refNo": refNo,
