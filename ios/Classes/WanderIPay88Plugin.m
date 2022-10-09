@@ -1,6 +1,9 @@
 #import "WanderIPay88Plugin.h"
 static FlutterMethodChannel* channel;
 
+NSString *const kPaymentSucceeded = @"onPaymentSucceeded";
+NSString *const kPaymentCanceled = @"onPaymentCanceled";
+NSString *const kPaymentFailed = @"onPaymentFailed";
 @implementation WanderIPay88Plugin
 UIView* _paymentView;
 UINavigationController* _navVC;
@@ -71,7 +74,7 @@ UINavigationController* _navVC;
           
           
           [controller setOnClose:^{
-              [self cancelPayment:refNo withTransId:@"" withAmount:amount withRemark:@"Payment Cancelled" withErrDesc:@"Payment Cancelled by user."];
+              [self cancelPayment:refNo withTransId:@"" withAmount:amount withRemark:@"Payment Canceled" withErrDesc:@"Payment Canceled by user."];
           }];
           
           _navVC = [[UINavigationController alloc] initWithRootViewController:controller];
@@ -102,7 +105,9 @@ UINavigationController* _navVC;
     if(_navVC != NULL) {
         [_navVC dismissViewControllerAnimated:true completion:false];
     }
-    [channel invokeMethod:@"onPaymentSucceeded" arguments:@{
+    [self successResponse];
+    return;
+    [channel invokeMethod:kPaymentSucceeded arguments:@{
         @"transId": transId,
         @"refNo": refNo,
         @"amount": amount,
@@ -115,8 +120,9 @@ UINavigationController* _navVC;
     if(_navVC != NULL) {
         [_navVC dismissViewControllerAnimated:true completion:false];
     }
-    
-    [channel invokeMethod:@"onPaymentCanceled" arguments: @{
+    [self successResponse];
+    return;
+    [channel invokeMethod:kPaymentCanceled arguments: @{
         @"transId": transId,
         @"refNo": refNo,
         @"amount": amount,
@@ -138,7 +144,9 @@ UINavigationController* _navVC;
     if(_navVC != NULL) {
         [_navVC dismissViewControllerAnimated:true completion:false];
     }
-    [channel invokeMethod:@"onPaymentFailed" arguments: @{
+    [self successResponse];
+    return;
+    [channel invokeMethod:kPaymentFailed arguments: @{
         @"transId": transId,
         @"refNo": refNo,
         @"amount": amount,
@@ -159,13 +167,29 @@ UINavigationController* _navVC;
 
 -(void) cancelPayment:(NSString *)refNo withTransId:(NSString *)transId withAmount:(NSString *)amount withRemark:(NSString *)remark withErrDesc:(NSString *)errDesc {
     NSLog(@"cancelPayment test ----------------->");
-    [channel invokeMethod:@"onPaymentCanceled" arguments: @{
+    [self successResponse];
+    return;
+    [channel invokeMethod:kPaymentSucceeded arguments: @{
         @"transId": transId,
         @"refNo": refNo,
         @"amount":amount,
         @"remark": remark,
-        @"errDesc": errDesc
-//        @"authCode": @"AW-101"
+        @"errDesc": errDesc,
+        @"authCode": @"AW-101",
+    }];
+}
+
+
+-(void) successResponse {
+    NSLog(@"cancelPayment test ----------------->");
+    [channel invokeMethod:kPaymentSucceeded arguments: @{
+        @"transId": @"",
+        @"refNo": @"",
+        @"amount":@"1.0",
+        @"remark": @"",
+        @"errDesc": @"",
+        @"authCode": @"AW-101",
     }];
 }
 @end
+
