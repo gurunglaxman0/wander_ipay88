@@ -111,7 +111,7 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel) : IPayI
                     "transId" to "",
                     "refNo" to "",
                     "amount" to "",
-                    "errDesc" to "",
+                    "errDesc" to "Payment canceled by user",
                 )
             )
         }

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -12,7 +10,7 @@ abstract class IPay extends PlatformInterface {
     channel.setMethodCallHandler((call) async {
       String method = call.method;
       var arguments = call.arguments;
-      print("arguments ${arguments.toString()}");
+      debugPrint("-------->arguments ${arguments.toString()}");
       String? transId, refNo, amount, remark, authCode;
       String? errDesc, merchantCode, result;
       if (arguments is Map) {
@@ -90,6 +88,7 @@ abstract class IPay extends PlatformInterface {
 extension IPayCheckout on IPay {
   @protected
   void onPaymentSucceeded(String? transId, String? refNo, String? amount, String? remark, String? authCode) {
+    debugPrint("------->delegates length(onPaymentSucceeded):${delegates.length}");
     for (var d in delegates) {
       d.onPaymentSucceeded(transId, refNo, amount, remark, authCode);
     }
@@ -97,6 +96,7 @@ extension IPayCheckout on IPay {
 
   @protected
   void onPaymentFailed(String? transId, String? refNo, String? amount, String? remark, String? errDesc) {
+    debugPrint("------->delegates length(onPaymentFailed):${delegates.length}");
     for (var d in delegates) {
       d.onPaymentFailed(transId, refNo, amount, remark, errDesc);
     }
@@ -104,6 +104,7 @@ extension IPayCheckout on IPay {
 
   @protected
   void onPaymentCanceled(String? transId, String? refNo, String? amount, String? remark, String? errDesc) {
+    debugPrint("------->delegates length(onPaymentCanceled):${delegates.length}");
     for (var d in delegates) {
       d.onPaymentCanceled(transId, refNo, amount, remark, errDesc);
     }
