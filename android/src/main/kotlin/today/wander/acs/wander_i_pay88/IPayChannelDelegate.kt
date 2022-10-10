@@ -94,7 +94,7 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel) : IPayI
                     "transId" to refNo,
                     "refNo" to refNo,
                     "amount" to "",
-                    "remark" to "timeout",
+                    "remark" to if (iPaySessionTimeOut) "timeout" else "",
                     "errDesc" to if (iPaySessionTimeOut) "Transaction has been cancelled due to inactivity. Please start again.($refNo)" else "Payment canceled by user",
                 )
             )
