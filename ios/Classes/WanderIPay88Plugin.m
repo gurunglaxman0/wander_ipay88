@@ -46,6 +46,8 @@ UINavigationController* _navVC;
       id backendPostURL = [arguments objectForKey:@"backendPostURL"];
       id appDeepLink = [arguments objectForKey:@"appDeepLink"];
       
+      id timeoutInMinutes = [arguments objectForKey:@"timeoutInMinutes"];
+      
       
       IpayPayment* payment = [[IpayPayment alloc] init];
       [payment setMerchantCode:merchantCode ? [merchantCode description] : @""];
@@ -71,10 +73,14 @@ UINavigationController* _navVC;
         
           IPayViewController *controller = [[IPayViewController alloc] init];
           [[controller view] addSubview:_paymentView];
-          
+          [controller setTimeoutInMinutes:timeoutInMinutes ? [timeoutInMinutes description] : @"0"];
           
           [controller setOnClose:^{
               [self cancelPayment:refNo withTransId:@"" withAmount:amount withRemark:@"Payment Canceled" withErrDesc:@"Payment Canceled by user."];
+          }];
+          
+          [controller setOnTimeout:^{
+              [self cancelPayment:refNo withTransId:@"" withAmount:amount withRemark:@"timeout" withErrDesc:[NSString stringWithFormat:@"Transaction has been cancelled due to inactivity. Please start again. (%s)", refNo]];
           }];
           
           _navVC = [[UINavigationController alloc] initWithRootViewController:controller];

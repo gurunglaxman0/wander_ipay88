@@ -7,15 +7,19 @@
 
 #import "IPayViewController.h"
 
+int const kTimeoutInMinutes = 25;
 @interface IPayViewController ()
 
 @end
 
 @implementation IPayViewController
 
+NSTimer *autoCloseTimer;
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self addBackButton];
+    [self setupAutoClose];
     // Do any additional setup after loading the view.
 }
 
@@ -37,17 +41,32 @@
     }
     
     [self.navigationController dismissViewControllerAnimated:true completion:nil];
+    [autoCloseTimer invalidate];
 }
 
 
-/*
-#pragma mark - Navigation
+-(void) setupAutoClose {
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    int delayInMinutes = kTimeoutInMinutes;
+    int timeout = [_timeoutInMinutes intValue];
+    if(timeout > 0) {
+        delayInMinutes = timeout;
+    }
+    
+    int delayInSeconds = delayInMinutes*60;
+    autoCloseTimer = [NSTimer scheduledTimerWithTimeInterval:delayInSeconds
+             target:self
+             selector:@selector(autoClose)
+             userInfo:nil
+             repeats:NO];
 }
-*/
 
+-(void) autoClose {
+    if(self.onTimeout != nil){
+        self.onTimeout();
+    }
+    
+    [self.navigationController dismissViewControllerAnimated:true completion:nil];
+    [autoCloseTimer invalidate];
+}
 @end

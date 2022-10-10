@@ -11,7 +11,8 @@
 @interface IPayViewController : UIViewController
 
 @property(strong) void (^onClose)(void);
-
+@property(strong) void (^onTimeout)(void);
+@property(strong) NSString* timeoutInMinutes;
 
 @end
 
