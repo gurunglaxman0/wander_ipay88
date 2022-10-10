@@ -56,10 +56,8 @@ class IPayLauncherActivity : Activity() {
                 }
 
                 override fun onActivityStopped(activity: Activity) {
-                    if (activity is IPayIHActivity) {
-                        Log.d("IPayLauncherActivity", "----->Activity stopped")
-                        mainThreadHandler.removeCallbacks(iPayFinishRunnable)
-                    }
+                    // Empty
+
                 }
 
                 override fun onActivitySaveInstanceState(
@@ -70,7 +68,10 @@ class IPayLauncherActivity : Activity() {
                 }
 
                 override fun onActivityDestroyed(activity: Activity) {
-                    // Empty
+                    if (activity is IPayIHActivity) {
+                        Log.d("IPayLauncherActivity", "----->Activity stopped")
+                        mainThreadHandler.removeCallbacks(iPayFinishRunnable)
+                    }
                 }
             })
     }
