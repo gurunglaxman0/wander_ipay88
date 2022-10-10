@@ -1,19 +1,86 @@
 package today.wander.acs.wander_i_pay88
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
-import android.os.Parcel
-import android.os.Parcelable
+import android.os.*
+import android.util.Log
 import com.ipay.IPayIH
+import com.ipay.IPayIHActivity
 import com.ipay.IPayIHPayment
 
 class IPayLauncherActivity : Activity() {
+    private val mainThreadHandler: Handler = Handler(Looper.getMainLooper())
+    private var iPayActivity: Activity? = null
+    private var iPaySessionTimedOut = false
+    private var refNo: String = ""
+    private var timeoutInMinutes: Int = 0
+    private var defaultTimeoutInMinutes: Int = 25
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         launchIPay()
+        setIPaySessionTimer()
     }
+
+    private fun setIPaySessionTimer() {
+        application
+            .registerActivityLifecycleCallbacks(object :
+                Application.ActivityLifecycleCallbacks {
+
+                override fun onActivityCreated(
+                    activity: Activity,
+                    savedInstanceState: Bundle?
+                ) {
+                    if (activity is IPayIHActivity) {
+                        Log.d("IPayLauncherActivity", "----->timer started")
+                        iPayActivity = activity
+                        mainThreadHandler.postDelayed(
+                            iPayFinishRunnable,
+                            timeoutInMinutes.toLong() * 60000
+                        )
+                    }
+                }
+
+                override fun onActivityStarted(activity: Activity) {
+                    // Empty
+                }
+
+                override fun onActivityResumed(activity: Activity) {
+                    // Empty
+                }
+
+                override fun onActivityPaused(activity: Activity) {
+                    // Empty
+                }
+
+                override fun onActivityStopped(activity: Activity) {
+                    if (activity is IPayIHActivity) {
+                        Log.d("IPayLauncherActivity", "----->Activity stopped")
+                        mainThreadHandler.removeCallbacks(iPayFinishRunnable)
+                    }
+                }
+
+                override fun onActivitySaveInstanceState(
+                    activity: Activity,
+                    outState: Bundle
+                ) {
+                    // Empty
+                }
+
+                override fun onActivityDestroyed(activity: Activity) {
+                    // Empty
+                }
+            })
+    }
+
+    private val iPayFinishRunnable: Runnable =
+        Runnable {
+            iPaySessionTimedOut = true
+            Log.d("IPayLauncherActivity", "----->iPay session timeout")
+            iPayActivity?.finish()
+        }
 
     private fun launchIPay() {
         val bundle = intent.extras
@@ -21,6 +88,7 @@ class IPayLauncherActivity : Activity() {
         val channelDelegate = bundle?.getSerializable(IPAY_DELEGATE) as IPayChannelDelegate
         val iPayIHPayment = IPayIHPayment()
         iPayIHPayment.refNo = params?.refNo ?: ""
+        refNo = params?.refNo ?: ""
         iPayIHPayment.paymentId = params?.paymentId ?: ""
         iPayIHPayment.merchantKey = params?.merchantKey ?: ""
         iPayIHPayment.merchantCode = params?.merchantCode ?: ""
@@ -34,21 +102,26 @@ class IPayLauncherActivity : Activity() {
         iPayIHPayment.actionType = params?.actionType
         iPayIHPayment.country = params?.country ?: "MY"
         iPayIHPayment.lang = params?.lang
+        timeoutInMinutes = (params?.timoutInMinutes ?: defaultTimeoutInMinutes.toString()).toInt()
+        if (timeoutInMinutes == 0) {
+            Log.d("IPayLauncherActivity", "--------------------->default timeout to 25")
+            timeoutInMinutes = defaultTimeoutInMinutes
+        }
 
-        val ipayIntent = IPayIH.getInstance().checkout(
-                iPayIHPayment,
-                this,
-                channelDelegate,
-                IPayIH.PAY_METHOD_CREDIT_CARD
+        val iPayIntent = IPayIH.getInstance().checkout(
+            iPayIHPayment,
+            this,
+            channelDelegate,
+            IPayIH.PAY_METHOD_CREDIT_CARD
         )
-        startActivityForResult(ipayIntent, 1)
+        startActivityForResult(iPayIntent, 1)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         val channelDelegate = intent.extras?.getSerializable(IPAY_DELEGATE) as IPayChannelDelegate
         if (resultCode == RESULT_CANCELED) {
-            channelDelegate.onBackPressed()
+            channelDelegate.onBackPressed(iPaySessionTimedOut, refNo)
         }
         finish()
     }
@@ -57,8 +130,10 @@ class IPayLauncherActivity : Activity() {
         const val IPAY_PARAMS = "ipayParams"
         const val IPAY_DELEGATE = "ipayDelegate"
 
-        fun create(context: Context, params: IPayParams,
-                   channelDelegate: IPayChannelDelegate): Intent {
+        fun create(
+            context: Context, params: IPayParams,
+            channelDelegate: IPayChannelDelegate
+        ): Intent {
             val intent = Intent(context, IPayLauncherActivity::class.java)
             val bundle = Bundle()
             bundle.putParcelable(IPAY_PARAMS, params)
@@ -84,6 +159,7 @@ class IPayParams() : Parcelable {
     var actionType: String? = null
     var country: String? = null
     var lang: String? = null
+    var timoutInMinutes: String? = null
 
     constructor(parcel: Parcel) : this() {
         refNo = parcel.readString()
@@ -100,6 +176,7 @@ class IPayParams() : Parcelable {
         actionType = parcel.readString()
         country = parcel.readString()
         lang = parcel.readString()
+        timoutInMinutes = parcel.readString()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -117,6 +194,7 @@ class IPayParams() : Parcelable {
         parcel.writeString(actionType)
         parcel.writeString(country)
         parcel.writeString(lang)
+        parcel.writeString(timoutInMinutes)
     }
 
     override fun describeContents(): Int {

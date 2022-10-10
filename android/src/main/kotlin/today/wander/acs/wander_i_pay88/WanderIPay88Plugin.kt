@@ -47,6 +47,7 @@ class WanderIPay88Plugin : FlutterPlugin, MethodChannel.MethodCallHandler, Activ
                     params.actionType = call.argument<String>("actionType")
                     params.country = call.argument<String>("country") ?: "MY"
                     params.lang = call.argument<String>("lang")
+                    params.timoutInMinutes = call.argument<String>("timeoutInMinutes")
 
                     val intent = IPayLauncherActivity.create(_activity, params, channelDelegate)
                     _activity.startActivity(intent)

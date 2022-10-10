@@ -8,16 +8,23 @@ import java.io.Serializable
 
 private var methodChannel: MethodChannel? = null
 
-class IPayChannelDelegate(@Transient private var channel: MethodChannel) : IPayIHResultDelegate, Serializable {
+class IPayChannelDelegate(@Transient private var channel: MethodChannel) : IPayIHResultDelegate,
+    Serializable {
 
     init {
         methodChannel = channel
     }
 
     override fun onConnectionError(
-        transId: String?, refNo: String?, p2: String?, p3: String?, amount: String?, p5: String?, p6: String?
+        transId: String?,
+        refNo: String?,
+        p2: String?,
+        p3: String?,
+        amount: String?,
+        p5: String?,
+        p6: String?
     ) {
-//        sendSuccessReponse(transId, refNo)
+//        sendSuccessResponse(transId, refNo)
         Handler(Looper.getMainLooper()).post {
             methodChannel?.invokeMethod(
                 "onPaymentFailed", mapOf(
@@ -49,7 +56,7 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel) : IPayI
     override fun onPaymentFailed(
         transId: String?, refNo: String?, amount: String?, remark: String?, errDesc: String?
     ) {
-//        sendSuccessReponse(transId, refNo)
+//        sendSuccessResponse(transId, refNo)
         Handler(Looper.getMainLooper()).post {
             methodChannel?.invokeMethod(
                 "onPaymentFailed", mapOf(
@@ -66,7 +73,7 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel) : IPayI
     override fun onPaymentCanceled(
         transId: String?, refNo: String?, amount: String?, remark: String?, errDesc: String?
     ) {
-//        sendSuccessReponse(transId, refNo)
+//        sendSuccessResponse(transId, refNo)
         Handler(Looper.getMainLooper()).post {
             methodChannel?.invokeMethod(
                 "onPaymentCanceled", mapOf(
@@ -80,14 +87,15 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel) : IPayI
         }
     }
 
-    fun onBackPressed() {
+    fun onBackPressed(iPaySessionTimeOut: Boolean, refNo: String) {
         Handler(Looper.getMainLooper()).post {
             methodChannel?.invokeMethod(
                 "onPaymentCanceled", mapOf(
-                    "transId" to "",
-                    "refNo" to "",
+                    "transId" to refNo,
+                    "refNo" to refNo,
                     "amount" to "",
-                    "errDesc" to "Payment canceled by user",
+                    "remark" to "timeout",
+                    "errDesc" to if (iPaySessionTimeOut) "Transaction has been cancelled due to inactivity. Please start again.($refNo)" else "Payment canceled by user",
                 )
             )
         }
@@ -96,7 +104,7 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel) : IPayI
     override fun onRequeryResult(
         merchantCode: String?, refNo: String?, amount: String?, result: String?
     ) {
-//        sendSuccessReponse("onRequeryResult", refNo)
+//        sendSuccessResponse("onRequeryResult", refNo)
         Handler(Looper.getMainLooper()).post {
             methodChannel?.invokeMethod(
                 "onRequeryResult", mapOf(
@@ -109,7 +117,7 @@ class IPayChannelDelegate(@Transient private var channel: MethodChannel) : IPayI
         }
     }
 
-    fun sendSuccessReponse(transId: String?, refNo: String?) {
+    fun sendSuccessResponse(transId: String?, refNo: String?) {
         Handler(Looper.getMainLooper()).post {
             methodChannel?.invokeMethod(
                 "onPaymentSucceeded", mapOf(

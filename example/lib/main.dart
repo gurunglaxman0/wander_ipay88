@@ -42,7 +42,8 @@ class _MyAppState extends State<MyApp> implements IPayResultDelegate {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      platformVersion = await _wanderIPay88Plugin.getPlatformVersion() ?? 'Unknown platform version';
+      platformVersion = await _wanderIPay88Plugin.getPlatformVersion() ??
+          'Unknown platform version';
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
@@ -91,7 +92,8 @@ class _MyAppState extends State<MyApp> implements IPayResultDelegate {
       ..country = "MY"
       ..prodDesc = "AEON TOP UP"
       ..backendPostURL = "https://www.aeonwallet.com.my/app/ipay/successack"
-      ..paymentId = "6";
+      ..paymentId = "6"
+      ..timeoutInMinutes = "0";
 
     // debugPrint("payment ${payment.toArguments().toString()}");
 
@@ -100,21 +102,24 @@ class _MyAppState extends State<MyApp> implements IPayResultDelegate {
   }
 
   @override
-  void onPaymentCanceled(String? transId, String? refNo, String? amount, String? remark, String? errDesc) {
+  void onPaymentCanceled(String? transId, String? refNo, String? amount,
+      String? remark, String? errDesc) {
     setState(() {
       _iPayResponse = "Payment Cancelled $errDesc";
     });
   }
 
   @override
-  void onPaymentFailed(String? transId, String? refNo, String? amount, String? remark, String? errDesc) {
+  void onPaymentFailed(String? transId, String? refNo, String? amount,
+      String? remark, String? errDesc) {
     setState(() {
       _iPayResponse = "Payment Failed $errDesc";
     });
   }
 
   @override
-  void onPaymentSucceeded(String? transId, String? refNo, String? amount, String? remark, String? authCode) {
+  void onPaymentSucceeded(String? transId, String? refNo, String? amount,
+      String? remark, String? authCode) {
     setState(() {
       _iPayResponse = "Payment Succeeded";
     });

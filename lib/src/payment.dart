@@ -16,6 +16,7 @@ class IPayPayment {
     this.lang,
     this.country = "",
     this.backendPostURL = "",
+    this.timeoutInMinutes = "",
   });
 
   String paymentId;
@@ -36,6 +37,7 @@ class IPayPayment {
   /// Not available in Indonesian implementation
   String? actionType;
   String? appDeepLink;
+  String timeoutInMinutes;
 
   Map<String, dynamic> toArguments() {
     return {
@@ -55,6 +57,7 @@ class IPayPayment {
       'backEndPostURL': backendPostURL,
       'actionType': actionType,
       'appDeepLink': appDeepLink,
+      'timeoutInMinutes': timeoutInMinutes,
     };
   }
 
