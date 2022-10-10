@@ -33,6 +33,7 @@ class IPayLauncherActivity : Activity() {
                     activity: Activity,
                     savedInstanceState: Bundle?
                 ) {
+                    Log.d("IPayLauncherActivity", "----->Activity onActivityCreated")
                     if (activity is IPayIHActivity) {
                         Log.d("IPayLauncherActivity", "----->timer started")
                         iPayActivity = activity
@@ -44,32 +45,31 @@ class IPayLauncherActivity : Activity() {
                 }
 
                 override fun onActivityStarted(activity: Activity) {
-                    // Empty
+                    Log.d("IPayLauncherActivity", "----->Activity onActivityStarted")
                 }
 
                 override fun onActivityResumed(activity: Activity) {
-                    // Empty
+                    Log.d("IPayLauncherActivity", "----->Activity onActivityResumed")
                 }
 
                 override fun onActivityPaused(activity: Activity) {
-                    // Empty
+                    Log.d("IPayLauncherActivity", "----->Activity onActivityPaused")
                 }
 
                 override fun onActivityStopped(activity: Activity) {
-                    // Empty
-
+                    Log.d("IPayLauncherActivity", "----->Activity onActivityStopped")
                 }
 
                 override fun onActivitySaveInstanceState(
                     activity: Activity,
                     outState: Bundle
                 ) {
-                    // Empty
+                    Log.d("IPayLauncherActivity", "----->Activity onActivitySaveInstanceState")
                 }
 
                 override fun onActivityDestroyed(activity: Activity) {
                     if (activity is IPayIHActivity) {
-                        Log.d("IPayLauncherActivity", "----->Activity stopped")
+                        Log.d("IPayLauncherActivity", "----->Activity onActivityDestroyed")
                         mainThreadHandler.removeCallbacks(iPayFinishRunnable)
                     }
                 }
