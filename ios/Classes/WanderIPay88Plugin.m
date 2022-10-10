@@ -72,15 +72,17 @@ UINavigationController* _navVC;
           UIViewController* rootController = [[[UIApplication.sharedApplication delegate] window] rootViewController];
         
           IPayViewController *controller = [[IPayViewController alloc] init];
-          [[controller view] addSubview:_paymentView];
           [controller setTimeoutInMinutes:timeoutInMinutes ? [timeoutInMinutes description] : @"0"];
+          
+          [[controller view] addSubview:_paymentView];
           
           [controller setOnClose:^{
               [self cancelPayment:refNo withTransId:@"" withAmount:amount withRemark:@"Payment Canceled" withErrDesc:@"Payment Canceled by user."];
           }];
           
           [controller setOnTimeout:^{
-              [self cancelPayment:refNo withTransId:@"" withAmount:amount withRemark:@"timeout" withErrDesc:[NSString stringWithFormat:@"Transaction has been cancelled due to inactivity. Please start again. (%s)", refNo]];
+              NSString* transactionId = refNo ? [refNo description] : @"";
+              [self cancelPayment:refNo withTransId:@"" withAmount:amount withRemark:@"timeout" withErrDesc:[NSString stringWithFormat:@"Transaction has been cancelled due to inactivity. Please start again. (%@)", transactionId]];
           }];
           
           _navVC = [[UINavigationController alloc] initWithRootViewController:controller];
